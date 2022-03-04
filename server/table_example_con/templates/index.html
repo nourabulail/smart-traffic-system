@@ -1,0 +1,103 @@
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+{% load bootstrap3 %}
+<!doctype html>
+<html>
+    <head>
+        <a href="board/"><title>Show Traffic</title></a>
+        <link rel="stylesheet" href="/static/css/pos.css"/>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/static/css/table_1.css"/>
+        <style>
+           body {background-color: whitesmoke;}
+        </style>
+        <script type="text/javascript" src="/static/js/jquery-1.11.0.js"></script>
+    </head>
+    <body>
+        <div id="Top" style="background:#38c">
+            <a href="/main" id="acrn_title">&nbsp;Show Traffic</a>
+        </div>
+        <div id="Center">
+            <div id="Center_Filter">
+                <form action="/traffic_filter" method="get">
+                <table class="center_table">
+                    <tr><td colspan="5"><h3>Search by Time Mode and Camera</h3></td></tr>
+                    <tr>
+                        <td>Time Mode:</td>
+                        <td>&nbsp;&nbsp;<select id="filter_time" name="filter_time" style="width: 100px;">
+                            <option value="">Seconds</option>
+                            {% for i in category_list %}
+                            <option value="{{i}}" {% if i == filter_time %} selected{% endif %}>{{i}}</option>
+                            {% endfor %}
+                        </select></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Camera Location:</td>
+                        <td>&nbsp;&nbsp;<select id="filter_camera" name="filter_camera" style="width: 100px;">
+                            <option value="all">All</option>
+                            {% for camera in cameras %}
+                            <option value="{{camera.camera_id}}" {% if camera.camera_id == filter_camera %} selected{% endif %}>{{camera.camera_id}}</option>
+                            {% endfor %}
+                        </select></td>
+                        <td><input type="submit" value="Search"></td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+        <div id="Table">
+            <h3>&nbsp;Real-time</h3>
+            {% render_table table %}
+        </div>
+    </body>
+
+    <script>
+
+        window.onload = function () {
+            // Year -> "Year"
+            // Month -> "Month"
+            // Day -> "Day"
+            // Hour -> "Hour"
+            // Seconds -> ""
+    
+            let filter_time_val = $("#filter_time").val();
+            let filter_camera_val = $("#filter_camera").val();
+    
+            if (filter_camera_val == "all") {
+                format_time_td(filter_time_val, 2);
+            } else {
+                format_time_td(filter_time_val, 1);
+            }
+        };
+    
+        function format_time_td(filter_time_val, td_index) {
+            switch (filter_time_val) {
+                case "Year":
+                    $("#Table tbody tr").each(function () {
+                        $(this).children('td').eq(td_index).text($(this).children('td').eq(td_index).text().substr(0, 4));
+                    });
+                    break;
+                case "Month":
+                    $("#Table tbody tr").each(function () {
+                        $(this).children('td').eq(td_index).text($(this).children('td').eq(td_index).text().substr(0, 7));
+                    });
+                    break;
+                case "Day":
+                    $("#Table tbody tr").each(function () {
+                        $(this).children('td').eq(td_index).text($(this).children('td').eq(td_index).text().substr(0, 10));
+                    });
+                    break;
+                case "Hour":
+                    $("#Table tbody tr").each(function () {
+                        $(this).children('td').eq(td_index).text($(this).children('td').eq(td_index).text().substr(0, 13));
+                    });
+                    break;
+                case "":
+                    break;
+            }
+        }
+    
+    </script>
+
+</html>
